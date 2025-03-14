@@ -1,3 +1,4 @@
+from cipher.transposition import TranspositionCipher
 from cipher.playfair import PlayFairCipher
 from cipher.railfence import RailFenceCipher
 from cipher.vigenere import VigenereCipher
@@ -98,6 +99,34 @@ def playfair_decrypt():
     
     return jsonify({'decrypted_text': decrypted_text})
 
+# Transposition CIPHER ALGORITHM
+transposition_cipher = TranspositionCipher()
+
+# API để mã hóa
+@app.route('/api/transposition/encrypt', methods=['POST'])
+def transposition_encrypt():
+    data = request.get_json()
+    plain_text = data.get('plain_text')
+    key = int(data.get('key'))
+    
+    if not plain_text or not key:
+        return jsonify({'error': 'Missing plain_text or key'}), 400
+
+    encrypted_text = transposition_cipher.encrypt(plain_text, key)
+    return jsonify({'encrypted_text': encrypted_text})
+
+# API để giải mã
+@app.route('/api/transposition/decrypt', methods=['POST'])
+def transposition_decrypt():
+    data = request.get_json()
+    cipher_text = data.get('cipher_text')
+    key = int(data.get('key'))
+
+    if not cipher_text or not key:
+        return jsonify({'error': 'Missing cipher_text or key'}), 400
+
+    decrypted_text = transposition_cipher.decrypt(cipher_text, key)
+    return jsonify({'decrypted_text': decrypted_text})
 
 # main function
 if __name__ == "__main__":
