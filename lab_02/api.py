@@ -1,3 +1,4 @@
+from cipher.playfair import PlayFairCipher
 from cipher.railfence import RailFenceCipher
 from cipher.vigenere import VigenereCipher
 from flask import Flask, request, jsonify
@@ -24,6 +25,7 @@ def caesar_decrypt():
     decrypted_text = caesar_cipher.decrypt_text(cipher_text, key)
     return jsonify({'decrypted_message': decrypted_text})
 
+# Vigenere CIPHER ALGORITHM
 vigenere_cipher = VigenereCipher()
 
 @app.route('/api/vigenere/encrypt', methods=['POST'])
@@ -42,6 +44,7 @@ def vigenere_decrypt():
     decrypted_text = vigenere_cipher.vigenere_decrypt(cipher_text, key)
     return jsonify({'decrypted_text': decrypted_text})
 
+# RailFence CIPHER ALGORITHM
 railfence_cipher = RailFenceCipher()
 
 @app.route('/api/railfence/encrypt', methods=['POST'])
@@ -60,6 +63,39 @@ def decrypt():
     key = int(data.get('key', 2))
 
     decrypted_text = railfence_cipher.rail_fence_decrypt(cipher_text, key)
+    return jsonify({'decrypted_text': decrypted_text})
+
+# PlayFair CIPHER ALGORITHM
+
+playfair_cipher = PlayFairCipher()  # Khởi tạo đối tượng mã hóa PlayFairCipher
+
+@app.route('/api/playfair/creatematrix', methods=['POST'])
+def playfair_creatematrix():
+    data = request.json
+    key = data['key']
+    playfair_matrix = playfair_cipher.create_playfair_matrix(key)
+    return jsonify({"playfair_matrix": playfair_matrix})
+
+@app.route('/api/playfair/encrypt', methods=['POST'])
+def playfair_encrypt():
+    data = request.json
+    plain_text = data['plain_text']
+    key = data['key']
+    
+    playfair_matrix = playfair_cipher.create_playfair_matrix(key)
+    encrypted_text = playfair_cipher.playfair_encrypt(plain_text, playfair_matrix)
+    
+    return jsonify({'encrypted_text': encrypted_text})
+
+@app.route('/api/playfair/decrypt', methods=['POST'])
+def playfair_decrypt():
+    data = request.json
+    cipher_text = data['cipher_text']
+    key = data['key']
+    
+    playfair_matrix = playfair_cipher.create_playfair_matrix(key)
+    decrypted_text = playfair_cipher.playfair_decrypt(cipher_text, playfair_matrix)
+    
     return jsonify({'decrypted_text': decrypted_text})
 
 
