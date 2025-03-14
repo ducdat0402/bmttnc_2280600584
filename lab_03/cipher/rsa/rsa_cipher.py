@@ -1,7 +1,7 @@
 import sys
+import requests
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from ui.rsa import Ui_MainWindow
-import requests
 
 class MyApp(QMainWindow):
     def __init__(self):
@@ -9,18 +9,12 @@ class MyApp(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # Kết nối các nút với API
+        # Kết nối nút với hàm xử lý
         self.ui.btn_gen_keys.clicked.connect(self.call_api_gen_keys)
         self.ui.btn_encrypt.clicked.connect(self.call_api_encrypt)
         self.ui.btn_decrypt.clicked.connect(self.call_api_decrypt)
         self.ui.btn_sign.clicked.connect(self.call_api_sign)
         self.ui.btn_verify.clicked.connect(self.call_api_verify)
-
-    def show_message(self, text):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText(text)
-        msg.exec_()
 
     def call_api_gen_keys(self):
         url = "http://127.0.0.1:5000/api/rsa/generate_keys"
@@ -28,7 +22,10 @@ class MyApp(QMainWindow):
             response = requests.get(url)
             if response.status_code == 200:
                 data = response.json()
-                self.show_message(data["message"])
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText(data["message"])
+                msg.exec_()
             else:
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
@@ -45,7 +42,11 @@ class MyApp(QMainWindow):
             if response.status_code == 200:
                 data = response.json()
                 self.ui.txt_cipher_text.setText(data["encrypted_message"])
-                self.show_message("Encrypted Successfully")
+                
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("Encrypted Successfully")
+                msg.exec_()
             else:
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
@@ -62,7 +63,11 @@ class MyApp(QMainWindow):
             if response.status_code == 200:
                 data = response.json()
                 self.ui.txt_plain_text.setText(data["decrypted_message"])
-                self.show_message("Decrypted Successfully")
+                
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("Decrypted Successfully")
+                msg.exec_()
             else:
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
@@ -71,14 +76,18 @@ class MyApp(QMainWindow):
     def call_api_sign(self):
         url = "http://127.0.0.1:5000/api/rsa/sign"
         payload = {
-            "message": self.ui.txt_info.toPlainText()
+            "message": self.ui.txt_info.toPlainText(),
         }
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
                 self.ui.txt_sign.setText(data["signature"])
-                self.show_message("Signed Successfully")
+                
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("Signed Successfully")
+                msg.exec_()
             else:
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
@@ -94,10 +103,15 @@ class MyApp(QMainWindow):
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                
                 if data["is_verified"]:
-                    self.show_message("Verified Successfully")
+                    msg.setText("Verified Successfully")
                 else:
-                    self.show_message("Verification Failed")
+                    msg.setText("Verification Failed")
+                
+                msg.exec_()
             else:
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:

@@ -1,2 +1,7 @@
+# phần nàu=ỳ cảu lab 2
 PyQt5
 requests
+
+# Phần này cảu lab3
+Flask >= 2.3.2
+rsa >=4.9
